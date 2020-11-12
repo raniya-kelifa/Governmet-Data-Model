@@ -3,9 +3,35 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var jwt = require('express-jwt');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
+
+
+const mongoose = require('./config/mongo');
+//const { jwt_key } = require('./config/vars');
+
+
+
+var app = express();
+
+// open mongoose connection
+mongoose.connect();
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+app.use(jwt({ secret: jwt_key, algorithms: ['HS256']})
+.unless({path: routes.public})); // Auth
+
+
 
 var app = express();
 
