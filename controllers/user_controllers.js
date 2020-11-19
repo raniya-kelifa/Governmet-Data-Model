@@ -1,6 +1,7 @@
 
 const userModel = require('../models/user-model')
-
+const infoModel = require('../models/information')
+const { db } = require('../models/information')
 
 exports.All = async (req, res) => {
 
@@ -8,8 +9,25 @@ exports.All = async (req, res) => {
 
         // return res.json(req.state.user)
         const users = await userModel.find({})
+       if(users!==null){
+        res.send('You are admin and have permission to insert and edit data')
+        infoModel.create({
+            institutions: req.body.institutions,
+            employees: req.body.employees,
+            serviceGiven: req.body.serviceGiven,
+            budget:req.body.budget
 
-        res.json(users)
+        }).then (data =>{
+            db.collection('information').insertOne(data);
+            console.log('RECOREDED')
+        })
+       // res.json(users)
+            
+       } 
+       else {
+        res.send('You are not the admin you can only view the data')
+        db.collection('information').find({})
+       }
 
     } catch (error) {
         res.status(400).json({
